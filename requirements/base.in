@@ -1,0 +1,6 @@
+pip-tools
+
+aiohttp
+
+# dot access for dicts in python
+python-box
