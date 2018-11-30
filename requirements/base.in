@@ -1,6 +1,7 @@
 pip-tools
 
 aiohttp
+aiojobs
 
 # dot access for dicts in python
 python-box
