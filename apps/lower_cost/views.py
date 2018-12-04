@@ -1,10 +1,9 @@
 from aiohttp import web
+from config.settings import store
 
 
-async def store_response(data):
-    aa = {'some1': 'data1'}
-    data.update(aa)
-    return web.json_response(data=data)
+async def store_response():
+    return web.json_response(data=store.tickets)
 
 
 class LowerCostView(web.View):
@@ -12,5 +11,14 @@ class LowerCostView(web.View):
     async def get(self):
         """Represent the `get` method of view"""
         print('get request')
-        data = {'example': 'data'}
-        return await store_response(data=data)
+        return await store_response()
+
+
+class LowerCostStatusView(web.View):
+
+    async def get(self):
+        statuses = {
+            'today_updated': store.is_updated(),
+            'update_status': store.update_status,
+        }
+        return web.json_response(statuses)

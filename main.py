@@ -2,11 +2,19 @@ import asyncio
 from aiohttp import web
 from config.urls import config_routers
 from libs.tickets import request_prepare_data
+from libs.helpers import create_keys
+from config.settings import store
 
 
 async def schedule_request():
-    data = await request_prepare_data('ALA-CIT201901121000E')
-    print(data)
+    if not store.is_updated():
+        key = next(create_keys())
+        if not store.store_updated(key):
+            for keys in create_keys():
+                print(keys, 'KEY')
+                data = await request_prepare_data(f'{keys}1000E')
+                status, value = store.get_or_create(keys, data)
+                print(f'{status}, {value}')
 
 
 async def constant_update(loop):
