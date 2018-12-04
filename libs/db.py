@@ -10,6 +10,7 @@ class Store(object):
         self.today_updated = False
 
     def _prepare_reload(self):
+        """Prepare to reload of date for `today` data"""
         for key in create_keys():
             self.update_status[key] = False
 
@@ -28,7 +29,7 @@ class Store(object):
     def is_updated(self):
         return self.today_updated
 
-    def is_reload(self, key):
+    def is_ticket_updated(self, key):
         return self.update_status.get(key, False)
 
     def _update_status(self, key):
@@ -49,15 +50,3 @@ class Store(object):
 
     def __repr__(self):
         return f'{self.__class__.__name__}: {self.tickets.values()}'
-
-
-class Ticket(object):
-    """Current ticket"""
-    def __init__(self, cost, departure, direction):
-        self.cost = cost
-        self.departure = departure
-        self.direction = direction
-
-    def is_updated(self):
-        """Check updated the ticket"""
-        return 'status'

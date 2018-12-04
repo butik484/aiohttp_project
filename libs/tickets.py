@@ -3,10 +3,11 @@ import asyncio
 from .constants import AUTHORIZATION, URL_SEARCH, RESPONSE_URL
 from config.settings import store
 
-def minimal_price(item):
+
+def get_amount(item):
     """Helper function for `key` to min function
     Example:
-        min(tickets, key=minimal_price)
+        min(tickets, key=get_amount)
     Args:
         item(dict): Item of data with ticket
     Returns:
@@ -35,6 +36,9 @@ async def request_data(session, request_id):
         try:
             response = await resp.json()
             status = response.get('status')
+            print(
+                f'Status of prepare of data: {status} for id: {request_id}'
+            )
             if status == 'done':
                 return response
             return await request_data(session=session, request_id=request_id)
@@ -49,8 +53,8 @@ async def request_data(session, request_id):
 async def request_prepare_data(key):
     """Function for request the prepare of data from endpoint
     Args:
-        query(str): Query string with combined of direct and date example
-                `ALA-CIT201901121000E`
+        key(str): Query string with combined of direct and date example
+                `ALA-CIT20190112`
     Returns:
         lower of cost
     """
@@ -60,15 +64,23 @@ async def request_prepare_data(key):
             headers=AUTHORIZATION,
             json={'query': f'{key}1000E'}
         ) as resp:
-            print(resp.status)
+            print(
+                f'{resp.status} for key {key} and status is '
+                f'{store.is_ticket_updated(key)}'
+            )
             try:
                 response = await resp.json()
                 request_id = response.get('id')
                 done_data = await request_data(
                     session=session, request_id=request_id
                 )
-
-                store.get_or_create(key=key, value=done_data)
+                # get lower of cost ticket from returned data set
+                if done_data.get('items'):
+                    lowest_cost_ticket = min(
+                        done_data['items'], key=get_amount
+                    )
+                    # store the data into base
+                    store.get_or_create(key=key, value=lowest_cost_ticket)
 
                 return done_data
             except aiohttp.client_exceptions.ContentTypeError as error:
