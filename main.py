@@ -10,11 +10,12 @@ async def schedule_request():
     if not store.is_updated():
         key = next(create_keys())
         if not store.store_updated(key):
+            func_lict = []
             for keys in create_keys():
-                print(keys, 'KEY')
-                data = await request_prepare_data(f'{keys}1000E')
-                status, value = store.get_or_create(keys, data)
-                print(f'{status}, {value}')
+                # prepare pool of request functions
+                func_lict.append(request_prepare_data(keys))
+            # await the requests
+            await asyncio.gather(*func_lict)
 
 
 async def constant_update(loop):

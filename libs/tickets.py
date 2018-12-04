@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 from .constants import AUTHORIZATION, URL_SEARCH, RESPONSE_URL
-
+from config.settings import store
 
 def minimal_price(item):
     """Helper function for `key` to min function
@@ -46,7 +46,7 @@ async def request_data(session, request_id):
             return await request_data(session=session, request_id=request_id)
 
 
-async def request_prepare_data(query):
+async def request_prepare_data(key):
     """Function for request the prepare of data from endpoint
     Args:
         query(str): Query string with combined of direct and date example
@@ -58,7 +58,7 @@ async def request_prepare_data(query):
         async with session.post(
             url=URL_SEARCH,
             headers=AUTHORIZATION,
-            json={'query': query}
+            json={'query': f'{key}1000E'}
         ) as resp:
             print(resp.status)
             try:
@@ -67,17 +67,9 @@ async def request_prepare_data(query):
                 done_data = await request_data(
                     session=session, request_id=request_id
                 )
+
+                store.get_or_create(key=key, value=done_data)
+
                 return done_data
             except aiohttp.client_exceptions.ContentTypeError as error:
                 print(f'need to be logged : {error}')
-#
-#
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(request_prepare_data())
-# loop.close()
-#
-# """
-# for x in direct:
-#     for date in dates:
-#         run request
-# """
