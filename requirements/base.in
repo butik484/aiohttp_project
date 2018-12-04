@@ -3,5 +3,7 @@ pip-tools
 aiohttp
 aiojobs
 
+requests
+
 # dot access for dicts in python
 python-box

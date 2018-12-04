@@ -1,10 +1,12 @@
 import asyncio
 from aiohttp import web
 from config.urls import config_routers
+from libs.tickets import request_prepare_data
 
 
 async def schedule_request():
-    print('Additional function update')
+    data = await request_prepare_data('ALA-CIT201901121000E')
+    print(data)
 
 
 async def constant_update(loop):

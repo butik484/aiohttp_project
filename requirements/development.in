@@ -2,3 +2,7 @@
 
 ipdb
 ipython
+
+pylama
+pydocstyle
+eradicate
